@@ -1,0 +1,13 @@
+flowchart LR
+  Browser[Invited browser] -->|IAP| Console[Control plane and console]
+  Client[Gateway client] -->|Bearer key| API[Chat data plane]
+  Console -->|Scenario ID resolved server-side| API
+  API --> State[(Firestore metadata)]
+  API -->|Service identity| Simulator[Deterministic provider simulator]
+  API -. Bounded live session .-> OpenAI[OpenAI API]
+  API -. Bounded live session .-> Anthropic[Anthropic API]
+
+  classDef private fill:#eef5ff,stroke:#315b7d,color:#132638
+  classDef external fill:#fff8e8,stroke:#8a6720,color:#3d2f0e
+  class Console,API,State,Simulator private
+  class OpenAI,Anthropic external
