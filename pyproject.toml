@@ -9,7 +9,7 @@ dependencies = [
   "google-cloud-secret-manager>=2.24,<3",
   "httpx>=0.28,<1",
   "jsonschema>=4.23,<5",
-  "pyjwt[crypto]>=2.10,<3",
+  "pyjwt[crypto]>=2.13.0,<3",
   "pydantic>=2.9,<3",
   "uvicorn>=0.34,<1",
 ]
