@@ -1,0 +1,300 @@
+{
+  "version": 1,
+  "scenarios": [
+    {
+      "id": "text.nonstream",
+      "author": "project",
+      "purpose": "Non-streaming text protocol",
+      "fictional_data_attestation": true,
+      "behavior": "text",
+      "request": {
+        "model": "gateway/general",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Summarize the fictional Northwind migration status in one sentence."
+          }
+        ]
+      },
+      "response": {
+        "message": {
+          "role": "assistant",
+          "content": "The fictional Northwind migration remains on schedule with no blocking risks."
+        },
+        "finish_reason": "stop",
+        "usage": {
+          "prompt_tokens": 12,
+          "completion_tokens": 13,
+          "total_tokens": 25
+        }
+      },
+      "checksum": "f953872dc90325680f8c4e51aec3a77c7007592e6d7202b3c6a2a505641d72e3"
+    },
+    {
+      "id": "text.stream",
+      "author": "project",
+      "purpose": "SSE text and terminal usage protocol",
+      "fictional_data_attestation": true,
+      "behavior": "stream",
+      "request": {
+        "model": "gateway/general",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Stream a fictional launch readiness update."
+          }
+        ],
+        "stream": true,
+        "stream_options": {
+          "include_usage": true
+        }
+      },
+      "response": {
+        "fragments": [
+          "The fictional launch ",
+          "is ready for review."
+        ],
+        "finish_reason": "stop",
+        "usage": {
+          "prompt_tokens": 8,
+          "completion_tokens": 9,
+          "total_tokens": 17
+        }
+      },
+      "checksum": "b6d9684048f5238706a0fef391b466e6b2b8caa599d2198ed0cb7419361c2483"
+    },
+    {
+      "id": "tools.weather",
+      "author": "project",
+      "purpose": "Function tool-call transport without execution",
+      "fictional_data_attestation": true,
+      "behavior": "tool_call",
+      "request": {
+        "model": "gateway/general",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Check the fictional weather for Sample City."
+          }
+        ],
+        "tools": [
+          {
+            "type": "function",
+            "function": {
+              "name": "get_weather",
+              "description": "Return synthetic weather.",
+              "parameters": {
+                "type": "object",
+                "properties": {
+                  "city": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "city"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        ],
+        "tool_choice": "auto"
+      },
+      "response": {
+        "message": {
+          "role": "assistant",
+          "content": null,
+          "tool_calls": [
+            {
+              "id": "call_synthetic_weather",
+              "type": "function",
+              "function": {
+                "name": "get_weather",
+                "arguments": "{\"city\":\"Sample City\"}"
+              }
+            }
+          ]
+        },
+        "finish_reason": "tool_calls",
+        "usage": {
+          "prompt_tokens": 18,
+          "completion_tokens": 8,
+          "total_tokens": 26
+        }
+      },
+      "checksum": "fc6c935a2cf73325c2cc509c00d5b4322b998b599326ba18a96e13567293413f"
+    },
+    {
+      "id": "structured.release",
+      "author": "project",
+      "purpose": "Strict JSON Schema structured output",
+      "fictional_data_attestation": true,
+      "behavior": "structured",
+      "request": {
+        "model": "gateway/general",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Return the fictional release status as structured data."
+          }
+        ],
+        "response_format": {
+          "type": "json_schema",
+          "json_schema": {
+            "name": "release_status",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "risk": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "status",
+                "risk"
+              ],
+              "additionalProperties": false
+            },
+            "strict": true
+          }
+        }
+      },
+      "response": {
+        "message": {
+          "role": "assistant",
+          "content": "{\"status\":\"on_track\",\"risk\":\"low\"}"
+        },
+        "finish_reason": "stop",
+        "usage": {
+          "prompt_tokens": 14,
+          "completion_tokens": 11,
+          "total_tokens": 25
+        }
+      },
+      "checksum": "f1181150edc62a4629dcfc9674b4d166fabce06047865f8fb518638bd55980c5"
+    },
+    {
+      "id": "fault.latency",
+      "author": "project",
+      "purpose": "Deterministic provider latency",
+      "fictional_data_attestation": true,
+      "behavior": "latency",
+      "request": {
+        "model": "gateway/general",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Return a delayed fictional acknowledgement."
+          }
+        ]
+      },
+      "response": {
+        "message": {
+          "role": "assistant",
+          "content": "Delayed synthetic acknowledgement."
+        },
+        "finish_reason": "stop",
+        "usage": {
+          "prompt_tokens": 7,
+          "completion_tokens": 4,
+          "total_tokens": 11
+        }
+      },
+      "checksum": "2045d7cff7d46896f34e73e9e337fcbb01fe42a2160b724b890f8086a7727ab9"
+    },
+    {
+      "id": "fault.timeout",
+      "author": "project",
+      "purpose": "Provider timeout behavior",
+      "fictional_data_attestation": true,
+      "behavior": "timeout",
+      "request": {
+        "model": "gateway/general",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Trigger the synthetic provider timeout."
+          }
+        ]
+      },
+      "response": {
+        "message": {
+          "role": "assistant",
+          "content": "This response is available only when the timeout permits it."
+        },
+        "finish_reason": "stop",
+        "usage": {
+          "prompt_tokens": 7,
+          "completion_tokens": 10,
+          "total_tokens": 17
+        }
+      },
+      "checksum": "455d7682ba176c620043dff80c0c78a37c5a47c2c01a6cdf46866b99def527e6"
+    },
+    {
+      "id": "fault.rate_limit",
+      "author": "project",
+      "purpose": "Provider rate-limit behavior",
+      "fictional_data_attestation": true,
+      "behavior": "rate_limit",
+      "request": {
+        "model": "gateway/general",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Trigger the synthetic provider rate limit."
+          }
+        ]
+      },
+      "response": null,
+      "checksum": "f9dfd593b678a381d32900398408fb53eebe2429de5e11a61881bb4f451914f7"
+    },
+    {
+      "id": "fault.malformed",
+      "author": "project",
+      "purpose": "Malformed provider response behavior",
+      "fictional_data_attestation": true,
+      "behavior": "malformed",
+      "request": {
+        "model": "gateway/general",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Trigger the synthetic malformed provider response."
+          }
+        ]
+      },
+      "response": null,
+      "checksum": "08a04bc12b035966b7d4e96a406c9c24a5289d42696514203c2d8999b90dce02"
+    },
+    {
+      "id": "fault.partial_stream",
+      "author": "project",
+      "purpose": "Partial SSE failure behavior",
+      "fictional_data_attestation": true,
+      "behavior": "partial_stream",
+      "request": {
+        "model": "gateway/general",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Trigger the synthetic partial stream."
+          }
+        ],
+        "stream": true
+      },
+      "response": {
+        "finish_reason": "error",
+        "usage": {
+          "prompt_tokens": 7,
+          "completion_tokens": 2,
+          "total_tokens": 9
+        }
+      },
+      "checksum": "bab6bb94f67c903e62e8a8046726db712afd520470d079c912c921a08ee1802a"
+    }
+  ]
+}

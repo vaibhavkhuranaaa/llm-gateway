@@ -1,0 +1,86 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python:
+    name: Python
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14"
+      - name: Set up Java
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: temurin
+          java-version: "25"
+      - name: Set up uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: "0.11.29"
+      - name: Set up Firestore emulator
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
+        with:
+          install_components: beta,cloud-firestore-emulator
+      - name: Install locked dependencies
+        run: uv sync --frozen --all-groups
+      - name: Audit Python dependencies
+        run: uv run pip-audit
+      - name: Start Firestore emulator
+        run: |
+          gcloud beta emulators firestore start --quiet --host-port=127.0.0.1:8787 --project=demo-private-gateway >/tmp/firestore-emulator.log 2>&1 &
+          for attempt in {1..30}; do
+            if curl --silent --fail http://127.0.0.1:8787 >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/firestore-emulator.log
+          exit 1
+      - name: Run Python tests
+        env:
+          FIRESTORE_EMULATOR_HOST: 127.0.0.1:8787
+        run: uv run pytest
+
+  console:
+    name: Console
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: console
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "26"
+          cache: npm
+          cache-dependency-path: console/package-lock.json
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Audit Node dependencies
+        run: npm audit --audit-level=moderate
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Build console
+        run: npm run build
+      - name: Run browser tests
+        run: npm run test:e2e
