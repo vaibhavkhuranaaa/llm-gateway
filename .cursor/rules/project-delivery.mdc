@@ -1,0 +1,6 @@
+---
+description: Project Delivery repository rules
+alwaysApply: true
+---
+
+Read AGENTS.md, PROJECT.md, and .project/ before editing. Work only on the next approved milestone. Preserve evidence, update state and handoff with verified facts, and never provision or publish without explicit human approval.
