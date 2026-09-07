@@ -35,6 +35,11 @@ gcloud beta emulators firestore start \
 FIRESTORE_EMULATOR_HOST=127.0.0.1:8787 uv run pytest
 ```
 
+The suite refuses to start without `FIRESTORE_EMULATOR_HOST`. Unset, the
+Firestore client falls back to ambient credentials and the identity, governance,
+workbench and route-configuration tests would reach `firestore.googleapis.com`
+for real.
+
 In another shell:
 
 ```bash
